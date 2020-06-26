@@ -17,6 +17,10 @@ class App extends React.Component<{}, indexState>{
     super(props);
     this.loginClicked = this.loginClicked.bind(this);
   }
+
+  // change <nav> to a <Navigation> react component
+  // for register have a handler that takes the newly created react model User
+  // and sends it to the UserService, which sends it to the server POST user endpoint
   render() {
     //https://codepen.io/marko-zub/pen/NpYwyr
     return (
