@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 body {
-    background-color: #212121;
+    background-color: rgb(27, 18, 36);
     color: #fff;
     font-family: monospace, serif;
     letter-spacing: 0.05em;
