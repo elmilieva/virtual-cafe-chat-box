@@ -21,7 +21,6 @@ export const Register: FC<Props> = ({ handleRegister }) => {
       }}
       onSubmit={(values, actions) => {
         actions.setSubmitting(false);
-        console.log(values);
         const user = {
             firstName: values.firstName,
             lastName: values.lastName,

@@ -1,14 +1,5 @@
 [
     {
-        "id": "1",
-        "firstName": "Dimityr",
-        "lastName": "Kolarov",
-        "password": "pass123",
-        "email": "mitko@abv.bg",
-        "imageUrl": "https://www.publicdomainpictures.net/pictures/280000/velka/website-alert.jpg",
-        "username": "mitko"
-    },
-    {
         "firstName": "Nikolay",
         "lastName": "Ivanov",
         "email": "niki@abv.bg",
@@ -59,5 +50,23 @@
         "email": "mkirilova@abv.bg",
         "imageUrl": "https://www.publicdomainpictures.net/pictures/280000/velka/website-alert.jpg",
         "username": "mari"
+    },
+    {
+        "firstName": "Maria",
+        "lastName": "Plamenova",
+        "username": "m123",
+        "password": "pass123",
+        "email": "m@abv.bg",
+        "imageUrl": "",
+        "id": "1593409821251"
+    },
+    {
+        "firstName": "Dimityr",
+        "lastName": "Ivanov",
+        "username": "mitko",
+        "password": "wewewewewe",
+        "email": "m@abv.bg",
+        "imageUrl": "",
+        "id": "1593412315246"
     }
 ]

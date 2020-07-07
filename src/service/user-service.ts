@@ -1,14 +1,10 @@
 import { UserRepository } from '../dao/repository';
 import { User } from '../model/user.model';
 import { IdType } from '../shared/shared-types';
-import MOCK_USERS from './../model/mock-users';
 
 
 class UserService {
     private repo = new UserRepository();
-    constructor() {
-        MOCK_USERS.forEach(user => this.repo.add(user as User)); 
-    }
 
     async getAllUsers() {
         const resp = await fetch('http://localhost:9000/api/users');
@@ -34,7 +30,7 @@ class UserService {
     }
 
     async updateUser(user: User) {
-        const resp = await fetch(`http://localhost:9000/api/users/${user.id}`, {
+        const resp = await fetch(`http://localhost:9000/api/users/${user._id}`, {
             method: 'PUT',
             mode: 'cors',
             headers: {'Content-Type': 'application/json'},

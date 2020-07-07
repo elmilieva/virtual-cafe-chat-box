@@ -28,7 +28,7 @@ export const Admin: FC<Props> = ({ userList, onEdit, onDelete }) => {
           </thead>
           <tbody>
           {userList.map((u) => (
-            <tr key={u.id}>
+            <tr key={u._id}>
               <td>{u.firstName}</td>
               <td>{u.lastName}</td>
               <td>{u.username}</td>

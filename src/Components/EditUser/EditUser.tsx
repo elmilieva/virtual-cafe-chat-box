@@ -17,8 +17,9 @@ export const EditUser: FC<Props> = ({ user, onEditUser }) => {
           lastName: user?.lastName,
           imageUrl: user?.imageUrl,
           email: user?.email,
-          id: user?.id,
-          username: user?.username
+          _id: user?._id,
+          roles: user?.roles
+
       }}
       onSubmit={(values, actions) => {
         actions.setSubmitting(false);
@@ -27,8 +28,8 @@ export const EditUser: FC<Props> = ({ user, onEditUser }) => {
             lastName: values.lastName,
             email: values.email,
             imageUrl: values.imageUrl,
-            id: values.id,
-            username: values.username
+            _id: values._id,
+            roles: values.roles
         } as User;
        onEditUser(user);
       }}

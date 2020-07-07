@@ -25,7 +25,7 @@ function App() {
   const history = useHistory();
 
   const handleSubmitUser: UserCallback = (user) => {
-    if (user.id) {
+    if (user._id) {
       //Edit
       UserService.updateUser(user).then((edited) => {
         //setUsers(users.map((p) => (p.id === edited.id ? user : p)));
@@ -41,7 +41,7 @@ function App() {
 
   const handleSetUserToEdit: UserCallback = (user) => {
     setUserToEdit(user);
-    history.push(`/edit-user/${user.id}`);
+    history.push(`/edit-user/${user._id}`);
   };
 
   const handleEditUser: UserCallback = async (user) => {
@@ -51,7 +51,7 @@ function App() {
   }
 
   const handleDeleteUser: UserCallback = async (user) => {
-    await UserService.deleteUser(user.id);
+    await UserService.deleteUser(user._id);
     UserService.getAllUsers().then((users) => setUsers(users));
     history.push("/admin");
   }
