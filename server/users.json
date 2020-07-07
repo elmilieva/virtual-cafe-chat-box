@@ -1,0 +1,72 @@
+[
+    {
+        "firstName": "Nikolay",
+        "lastName": "Ivanov",
+        "email": "niki@abv.bg",
+        "imageUrl": "https://www.publicdomainpictures.net/pictures/280000/velka/website-alert.jpg",
+        "id": "3",
+        "password": "pass123",
+        "username": "niki"
+    },
+    {
+        "firstName": "Petyr",
+        "lastName": "Georgiev",
+        "email": "pesho@abv.bg",
+        "imageUrl": "https://www.publicdomainpictures.net/pictures/280000/velka/website-alert.jpg",
+        "id": "4",
+        "password": "pass123",
+        "username": "pesho"
+    },
+    {
+        "firstName": "Dimityr",
+        "lastName": "Jelqzkov",
+        "email": "mitko12@abv.bg",
+        "imageUrl": "https://www.publicdomainpictures.net/pictures/280000/velka/website-alert.jpg",
+        "id": "5",
+        "password": "pass123",
+        "username": "mitko2"
+    },
+    {
+        "firstName": "Eliza",
+        "lastName": "Ilieva",
+        "email": "eli@abv.bg",
+        "imageUrl": "https://www.publicdomainpictures.net/pictures/280000/velka/website-alert.jpg",
+        "id": "6",
+        "username": "eli"
+    },
+    {
+        "firstName": "Daria",
+        "lastName": "Mihailova",
+        "email": "dmih@abv.bg",
+        "imageUrl": "https://www.publicdomainpictures.net/pictures/280000/velka/website-alert.jpg",
+        "id": "7",
+        "username": "dari"
+    },
+    {
+        "id": "8",
+        "firstName": "Marina",
+        "lastName": "Kirilova",
+        "password": "pass123",
+        "email": "mkirilova@abv.bg",
+        "imageUrl": "https://www.publicdomainpictures.net/pictures/280000/velka/website-alert.jpg",
+        "username": "mari"
+    },
+    {
+        "firstName": "Maria",
+        "lastName": "Plamenova",
+        "username": "m123",
+        "password": "pass123",
+        "email": "m@abv.bg",
+        "imageUrl": "",
+        "id": "1593409821251"
+    },
+    {
+        "firstName": "Dimityr",
+        "lastName": "Ivanov",
+        "username": "mitko",
+        "password": "wewewewewe",
+        "email": "m@abv.bg",
+        "imageUrl": "",
+        "id": "1593412315246"
+    }
+]

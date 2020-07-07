@@ -64,11 +64,6 @@ export const Login = () => {
                     Log In
 </div>
             </button>
-            <div className="credits">
-                <a href="https://codepen.io/marko-zub/" target="_blank">
-                   @
-</a>
-            </div>
         </form>
     );
 
