@@ -9,6 +9,7 @@ body {
     font-family: monospace, serif;
     letter-spacing: 0.05em;
 }
+/*
 h1 {
     font-size: 23px;
 }
@@ -150,7 +151,7 @@ h1 {
      cursor: "auto" 
 }
 
-/*NEW HEEREEEE */
+/*NEW HEEREEEE 
 html, body {
     height: 100%;
     width: 100%;
@@ -182,4 +183,4 @@ body {
 }
 .credits a:hover {
     color: #fff;
-}
+} */

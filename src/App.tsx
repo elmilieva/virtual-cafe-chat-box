@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { Login } from "./Components/Login/Login";
+import Login from "./Components/Login/Login";
 import { Register } from "./Components/Register/Register";
 import { Home } from "./Components/Home/Home";
 import { Nav } from "./Components/Nav/Nav";
@@ -10,6 +10,8 @@ import UserService from "./service/user-service";
 import { Admin } from "./Components/Admin/Admin";
 import { User } from "./model/user.model";
 import { EditUser } from "./Components/EditUser/EditUser";
+import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
+import { RoomForm } from "./Components/RoomForm/RoomForm";
 
 interface indexState {
   loginClicked: boolean;
@@ -70,6 +72,9 @@ function App() {
         <Route exact path="/admin">
           <Admin userList={users} onEdit={handleSetUserToEdit} onDelete={handleDeleteUser}></Admin>
         </Route>
+        <ProtectedRoute exact path="/add-room">
+          <RoomForm users={users} handleRegister={handleEditUser}></RoomForm>
+        </ProtectedRoute>
         <Route exact path="/register">
           <Register handleRegister={handleSubmitUser}></Register>
         </Route>
