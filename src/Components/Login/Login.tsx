@@ -13,7 +13,6 @@ export default function Login(): ReactElement {
 
   function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log("HELLO");
     dispatch(
       submitLogin(
         {

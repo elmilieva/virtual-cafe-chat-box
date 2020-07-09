@@ -37,17 +37,12 @@ export const RoomForm: FC<Props> = ({ handleRegister, users }) => {
     return undefined;
   });
   const [state, setState] = useState<Record<string, any>>(initialStateObject);
-  const darkTheme = createMuiTheme({
-    palette: {
-      type: "dark",
-    },
-  });
+ 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({ ...state, [event.currentTarget.name]: event.target.checked });
   };
   const classes = useStyles();
   return (
-    <ThemeProvider theme={darkTheme}>
       <Formik
         initialValues={{
           roomName: "",
@@ -100,6 +95,5 @@ export const RoomForm: FC<Props> = ({ handleRegister, users }) => {
           </div>
         )}
       </Formik>
-    </ThemeProvider>
   );
 };
