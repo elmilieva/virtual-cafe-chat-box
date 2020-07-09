@@ -1,5 +1,7 @@
 import { User } from "../model/user.model";
 import { Message } from "../model/message.model";
+import { Room } from "../model/room.model";
+import { Product } from "../model/product.model";
 
 export type IdType = string;
 
@@ -17,4 +19,12 @@ export interface UserCallback {
 
 export interface MessageCallback{
     (message: Message): void;
+}
+
+export interface RoomCallback{
+    (room: Room): void;
+}
+
+export interface ProductCallback{
+    (product: Product): void;
 }

@@ -3,6 +3,27 @@ import "./Login.css";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { submitLogin } from "../../features/auth/authSlice";
+import {
+  TextField,
+  Button,
+  Typography,
+  makeStyles,
+  FormGroup,
+} from "@material-ui/core";
+import { Formik } from "formik";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(1),
+    padding: "1rem",
+  },
+  space: {
+    margin: "1rem",
+  },
+  center: {
+    textAlign: "center",
+  },
+}));
 
 export default function Login(): ReactElement {
   const dispatch = useDispatch();
@@ -10,6 +31,8 @@ export default function Login(): ReactElement {
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  const classes = useStyles();
 
   function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,61 +47,64 @@ export default function Login(): ReactElement {
     );
   }
   return (
-    <form autoComplete="off" onSubmit={login} className="form">
-      <div className="control">
-        <h1>Sign In</h1>
-      </div>
-      <div className="control block-cube block-input">
-        <input
-          ref={usernameRef}
-          className="fancy-input"
-          placeholder="Username"
-          type="text"
-          style={{}}
-          autoComplete="off"
-        />
-        <div className="bg-top">
-          <div className="bg-inner"></div>
+    <Formik
+      initialValues={{
+        username: "",
+        password: "",
+      }}
+      onSubmit={(values, actions) => {
+        actions.setSubmitting(false);
+        console.log(values.username);
+        dispatch(
+          submitLogin(
+            {
+              username: values.username || "",
+              password: values.password || "",
+            },
+            history
+          )
+        );
+      }}
+    >
+      {(props) => (
+        <div>
+          <form
+            autoComplete="off"
+            onSubmit={props.handleSubmit}
+            className="form"
+          >
+            <Typography className={classes.center} variant="h4">
+              Sign In
+            </Typography>
+            <FormGroup>
+              <TextField
+                onChange={props.handleChange}
+                onBlur={props.handleBlur}
+                variant="outlined"
+                className={classes.space}
+                name="username"
+                label="Username"
+                autoComplete="off"
+              />
+
+              <TextField
+                onChange={props.handleChange}
+                onBlur={props.handleBlur}
+                variant="outlined"
+                className={classes.space}
+                name="password"
+                label="Password"
+                type="password"
+                autoComplete="off"
+              />
+
+              <Button className={classes.space} variant="contained" color="primary" type="submit">
+                Login
+              </Button>
+            </FormGroup>
+          </form>
         </div>
-        <div className="bg-right">
-          <div className="bg-inner"></div>
-        </div>
-        <div className="bg">
-          <div className="bg-inner"></div>
-        </div>
-      </div>
-      <div className="control block-cube block-input">
-        <input
-          ref={passwordRef}
-          className="fancy-input"
-          name="password"
-          placeholder="Password"
-          type="password"
-          style={{}}
-          autoComplete="off"
-        />
-        <div className="bg-top">
-          <div className="bg-inner"></div>
-        </div>
-        <div className="bg-right">
-          <div className="bg-inner"></div>
-        </div>
-        <div className="bg">
-          <div className="bg-inner"></div>
-        </div>
-      </div>
-      <button className="btn block-cube block-cube-hover" type="submit">
-        <div className="bg-top">
-          <div className="bg-inner"></div>
-        </div>
-        <div className="bg-right">
-          <div className="bg-inner"></div>
-        </div>
-        <div className="bg">
-          <div className="bg-inner"></div>
-        </div>
-        <div className="text">Log In</div>
-      </button>
-    </form>
+      )}
+    </Formik>
   );
 }

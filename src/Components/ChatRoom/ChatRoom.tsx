@@ -1,17 +1,12 @@
 import React, { FC } from "react";
 
 import { MessageCallback } from "../../shared/shared-types";
-import { User } from "../../model/user.model";
 import { Message } from "../../model/message.model";
-import { useSelector } from "react-redux";
-import { RootState } from "../../app/rootReducer";
 import { IUser } from "./../../model/user.model";
 import {
-  Box,
   Grid,
   Button,
   FormGroup,
-  FormControlLabel,
   TextField,
   Typography,
   makeStyles,
@@ -22,11 +17,13 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import { Formik } from "formik";
+import { Room } from "../../model/room.model";
 
 interface Props {
   currentUser: IUser | undefined;
   handleSubmitMessage: MessageCallback;
   messages: Message[];
+  rooms: Room[];
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -55,6 +52,7 @@ export const ChatRoom: FC<Props> = ({
   handleSubmitMessage,
   currentUser,
   messages,
+  rooms
 }) => {
   const classes = useStyles();
   return (
@@ -87,6 +85,7 @@ export const ChatRoom: FC<Props> = ({
               </ListItemText>
             </ListItem>
           ))}
+          {rooms.map((r)=><span>{r.roomName}</span>)}
         </List>
       </div>
       <Formik
@@ -106,7 +105,7 @@ export const ChatRoom: FC<Props> = ({
       >
         {(props) => (
           <div className="Room-form">
-            <form className={classes.chatForm} onSubmit={props.handleSubmit}>
+            <form className={classes.chatForm} autoComplete="off" onSubmit={props.handleSubmit}>
               <FormGroup>
                 <TextField
                   className={classes.chatMessageField}
@@ -128,7 +127,4 @@ export const ChatRoom: FC<Props> = ({
       </Formik>
     </Grid>
   );
-  function sendMessage() {
-    handleSubmitMessage(new Message(currentUser, "testmessage"));
-  }
 };

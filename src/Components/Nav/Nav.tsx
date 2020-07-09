@@ -14,7 +14,7 @@ export const Nav = () => {
         <NavLink to="/">Home</NavLink>
         <NavLink to="/admin">Admin</NavLink>
         {isAuthenticated ? <NavLink to="/add-room">Create Room</NavLink> : ""}
-        <NavLink to="/chatroom">Chat Room</NavLink>
+        <NavLink to="/chat-room">Chat Room</NavLink>
         <NavLink className="pull-right" to="/register">
           Register
         </NavLink>

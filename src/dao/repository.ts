@@ -1,5 +1,6 @@
 import { User } from '../model/user.model';
 import { IdType, Indentifiable } from '../shared/shared-types';
+import { Product } from '../model/product.model';
 
 export interface Repository<T extends Indentifiable> {
     add(user: T): T;
@@ -56,4 +57,8 @@ export class MockRepository<T extends Indentifiable> implements Repository<T> {
 }
 
 export class UserRepository extends MockRepository<User> {
+}
+
+export class ProductRepository extends MockRepository<Product>{
+    
 }

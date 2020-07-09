@@ -1,14 +1,12 @@
 import React, { FC, useState } from "react";
 import { Formik } from "formik";
 import "./RoomForm.css";
-import { UserCallback } from "../../shared/shared-types";
+import { RoomCallback } from "../../shared/shared-types";
 import { User } from "../../model/user.model";
 import { Room } from "../../model/room.model";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import {
-  createMuiTheme,
-  ThemeProvider,
   Typography,
   Button,
   FormGroup,
@@ -26,11 +24,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  handleRegister: UserCallback;
+  handleRoomCreate: RoomCallback;
   users: User[];
 }
 
-export const RoomForm: FC<Props> = ({ handleRegister, users }) => {
+export const RoomForm: FC<Props> = ({ handleRoomCreate, users }) => {
   const initialStateObject: { [k: string]: any } = {};
   users.map((u) => {
     initialStateObject[u._id] = false;
@@ -56,8 +54,7 @@ export const RoomForm: FC<Props> = ({ handleRegister, users }) => {
               u._id in state && state[u._id] ? true : false
             ),
           } as Room;
-          // handleRegister(room);
-          console.log(room);
+          handleRoomCreate(room);
         }}
       >
         {(props) => (

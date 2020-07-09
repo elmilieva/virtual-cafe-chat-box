@@ -3,9 +3,13 @@ import "./App.css";
 import Login from "./Components/Login/Login";
 import { Register } from "./Components/Register/Register";
 import { Home } from "./Components/Home/Home";
-import { Nav } from "./Components/Nav/Nav";
 import { Route, Switch, useHistory } from "react-router";
-import { UserCallback, MessageCallback } from "./shared/shared-types";
+import {
+  UserCallback,
+  MessageCallback,
+  RoomCallback,
+  ProductCallback,
+} from "./shared/shared-types";
 import UserService from "./service/user-service";
 import { Admin } from "./Components/Admin/Admin";
 import { User } from "./model/user.model";
@@ -18,6 +22,12 @@ import { Message } from "./model/message.model";
 import { useSelector } from "react-redux";
 import { RootState } from "./app/rootReducer";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core";
+import { Room } from "./model/room.model";
+import TemporaryDrawer from "./TempDrawer";
+import { TemporaryDrawerLogged } from "./TempDrawerLogged";
+import { Product } from "./model/product.model";
+import productService from "./service/product-service";
+import { ProductForm } from "./Components/ProductForm/ProductForm";
 const SOCKET_IO_URL = "http://localhost:9000/";
 const socket = io(SOCKET_IO_URL);
 interface indexState {
@@ -42,13 +52,18 @@ function App() {
   ]);
   const [initialized, setInitialized] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [userToEdit, setUserToEdit] = useState<User | undefined>(undefined);
+  const [productToEdit, setProductToEdit] = useState<Product | undefined>(undefined);
   useEffect(() => {
     UserService.getAllUsers().then((users) => setUsers(users));
+    productService.getAllProducts().then((products) => setProducts(products));
     if (!initialized) {
       connectToRoom();
     }
-  }, [initialized]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const history = useHistory();
 
@@ -73,15 +88,24 @@ function App() {
     } else {
       //Create
       UserService.createNewUser(user).then((created) => {
-        //setUsers(users.concat(created));
+        setUsers(users.concat(created));
       });
     }
-    history.push("/users");
+    history.push("/login");
   };
 
   const handleSetUserToEdit: UserCallback = (user) => {
     setUserToEdit(user);
     history.push(`/edit-user/${user._id}`);
+  };
+  const handleSetProductToEdit: ProductCallback = (product) => {
+    setProductToEdit(product);
+    history.push(`/edit-product/${product._id}`);
+  };
+  const handleEditProduct: ProductCallback = async (product) => {
+    await productService.updateProduct(product);
+    productService.getAllProducts().then((products) => setProducts(products));
+    history.push("/admin");
   };
 
   const handleEditUser: UserCallback = async (user) => {
@@ -93,6 +117,18 @@ function App() {
   const handleDeleteUser: UserCallback = async (user) => {
     await UserService.deleteUser(user._id);
     UserService.getAllUsers().then((users) => setUsers(users));
+    history.push("/admin");
+  };
+
+  const handleRoomCreate: RoomCallback = (room) => {
+    setRooms((rooms) => [...rooms, room]);
+    history.push("/chatroom");
+  };
+
+  const handleProductCreate: ProductCallback = (product) => {
+    productService.createNewProduct(product).then((created) => {
+      setProducts((products) => [...products, created]);
+    });
     history.push("/admin");
   };
 
@@ -109,37 +145,60 @@ function App() {
   return (
     <React.Fragment>
       <ThemeProvider theme={darkTheme}>
-        <Nav></Nav>
+        {currentUser ? (
+          <TemporaryDrawerLogged
+            products={products}
+            currentUser={currentUser}
+          />
+        ) : (
+          <TemporaryDrawer />
+        )}
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
         <Switch>
           <Route exact path="/">
             <Home></Home>
           </Route>
-          <Route exact path="/admin">
+          <ProtectedRoute exact path="/admin">
             <Admin
+              products={products}
               userList={users}
               onEdit={handleSetUserToEdit}
               onDelete={handleDeleteUser}
+              onEditProduct={handleSetProductToEdit}
             ></Admin>
-          </Route>
-          <ProtectedRoute exact path="/add-room">
-            <RoomForm users={users} handleRegister={handleEditUser}></RoomForm>
           </ProtectedRoute>
-          <Route exact path="/chatroom">
+          <ProtectedRoute exact path="/add-room">
+            <RoomForm
+              users={users}
+              handleRoomCreate={handleRoomCreate}
+            ></RoomForm>
+          </ProtectedRoute>
+          <Route exact path="/chat-room">
             <ChatRoom
+              rooms={rooms}
               messages={messages}
               handleSubmitMessage={handleSubmitMessage}
               currentUser={currentUser}
             ></ChatRoom>
           </Route>
+          <ProtectedRoute exact path="/add-product">
+            <ProductForm
+              handleProductCreate={handleProductCreate}
+            ></ProductForm>
+          </ProtectedRoute>
+          <Route exact path="/join-room"></Route>
           <Route exact path="/register">
             <Register handleRegister={handleSubmitUser}></Register>
           </Route>
           <Route exact path="/login">
             <Login></Login>
           </Route>
-          <Route exact path="/edit-user/:userId">
+          <ProtectedRoute exact path="/edit-user/:userId">
             <EditUser user={userToEdit} onEditUser={handleEditUser} />
-          </Route>
+          </ProtectedRoute>
         </Switch>
       </ThemeProvider>
     </React.Fragment>
