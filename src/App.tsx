@@ -12,6 +12,7 @@ import { User } from "./model/user.model";
 import { EditUser } from "./Components/EditUser/EditUser";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 import { RoomForm } from "./Components/RoomForm/RoomForm";
+import ChatRoom from "./Components/ChatRoom/ChatRoom";
 
 interface indexState {
   loginClicked: boolean;
@@ -75,6 +76,9 @@ function App() {
         <ProtectedRoute exact path="/add-room">
           <RoomForm users={users} handleRegister={handleEditUser}></RoomForm>
         </ProtectedRoute>
+        <Route exact path="/chatroom">
+          <ChatRoom></ChatRoom>
+        </Route>
         <Route exact path="/register">
           <Register handleRegister={handleSubmitUser}></Register>
         </Route>
