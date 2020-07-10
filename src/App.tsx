@@ -30,7 +30,7 @@ import productService from "./service/product-service";
 import { ProductForm } from "./Components/ProductForm/ProductForm";
 import { validateYupSchema } from "formik";
 import Alert from "./Components/Alert/Alert";
-
+import { BoughtProduct } from "./model/boughtProduct.model";
 
 const SOCKET_IO_URL = "http://localhost:9000/";
 const socket = io(SOCKET_IO_URL);
@@ -40,24 +40,37 @@ interface indexState {
 }
 
 function App() {
-  const [purchasedProduct, setPurchasedProduct] = useState<Product | undefined>(undefined);
+  const [boughtProducts, setBoughtProducts] = useState<BoughtProduct[]>([]);
+  const [purchasedProducts, setPurchasedProducts] = useState<Product[]>([]);
   const [productReadyMessage, setProductReadyMessage] = useState<string>("");
   const timeoutRef = React.useRef<any>(null);
   function productReady() {
-    setProductReadyMessage("Your "+ purchasedProduct?.name+" is ready!");
+    setProductReadyMessage(
+      "Your " +
+        purchasedProducts[purchasedProducts.length - 1]?.name +
+        " is ready!"
+    );
   }
   useEffect(() => {
-    if(timeoutRef.current !== null){
+    if (timeoutRef.current !== null) {
       clearTimeout(timeoutRef.current);
     }
-    timeoutRef.current = setTimeout(()=>{
+    timeoutRef.current = setTimeout(() => {
       timeoutRef.current = null;
-      if(purchasedProduct !== undefined){
+      if (purchasedProducts[purchasedProducts.length - 1] !== undefined) {
+        const updatedBoughtProducts = boughtProducts.map((item, index) => {
+          if (index === boughtProducts.length - 1) {
+            item.state = "ready";
+          }
+          return item;
+        });
+        console.log(updatedBoughtProducts);
+        setBoughtProducts(updatedBoughtProducts);
         productReady();
-        setPurchasedProduct(undefined);
+        //setPurchasedProducts();
       }
     }, 5000);
-  },[purchasedProduct]);
+  }, [purchasedProducts, boughtProducts]);
   const currentUser = useSelector((state: RootState) => state.auth.loggedUser);
   const [messages, setMessages] = useState<Message[]>([
     new Message(
@@ -78,7 +91,9 @@ function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [userToEdit, setUserToEdit] = useState<User | undefined>(undefined);
-  const [productToEdit, setProductToEdit] = useState<Product | undefined>(undefined);
+  const [productToEdit, setProductToEdit] = useState<Product | undefined>(
+    undefined
+  );
   useEffect(() => {
     UserService.getAllUsers().then((users) => setUsers(users));
     productService.getAllProducts().then((products) => setProducts(products));
@@ -103,8 +118,16 @@ function App() {
   };
 
   const handlePurchasedProduct: ProductCallback = (product) => {
-    setPurchasedProduct(product);
-  }
+    setPurchasedProducts((purchasedProducts) => [
+      ...purchasedProducts,
+      product,
+    ]);
+    setBoughtProducts((boughtProducts) => [
+      ...boughtProducts,
+      new BoughtProduct(product, "making"),
+    ]);
+    console.log(boughtProducts);
+  };
 
   const handleSubmitUser: UserCallback = (user) => {
     if (user._id) {
@@ -115,7 +138,7 @@ function App() {
     } else {
       //Create
       UserService.createNewUser(user).then((created) => {
-        setUsers(users => [...users, created]);
+        setUsers((users) => [...users, created]);
       });
     }
     history.push("/login");
@@ -170,6 +193,7 @@ function App() {
       <ThemeProvider theme={darkTheme}>
         {currentUser ? (
           <TemporaryDrawerLogged
+            boughtProducts={boughtProducts}
             handlePurchasedProduct={handlePurchasedProduct}
             products={products}
             currentUser={currentUser}
@@ -225,7 +249,11 @@ function App() {
           </ProtectedRoute>
         </Switch>
       </ThemeProvider>
-      {(productReadyMessage !== "") && (<Alert key={productReadyMessage} severity="success">{productReadyMessage}</Alert>)}
+      {productReadyMessage !== "" && (
+        <Alert key={productReadyMessage} severity="success">
+          {productReadyMessage}
+        </Alert>
+      )}
     </React.Fragment>
   );
 }

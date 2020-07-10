@@ -12,11 +12,21 @@ import LocalCafeIcon from "@material-ui/icons/LocalCafe";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import ChatIcon from "@material-ui/icons/Chat";
 import MenuIcon from "@material-ui/icons/Menu";
-import { AppBar, Toolbar, IconButton, Typography, ListItemAvatar, Avatar } from "@material-ui/core";
+import CheckIcon from "@material-ui/icons/Check";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  ListItemAvatar,
+  Avatar,
+} from "@material-ui/core";
 import { NavLink } from "react-router-dom";
 import { IUser } from "./model/user.model";
 import { Product } from "./model/product.model";
-import { ProductCallback } from './shared/shared-types';
+import { ProductCallback } from "./shared/shared-types";
+import { BoughtProduct } from "./model/boughtProduct.model";
+import CircularProgressWithLabel from "./Components/CircularProgress/CircularProgress";
 
 const useStyles = makeStyles({
   list: {
@@ -41,10 +51,16 @@ type Anchor = "top" | "left" | "bottom" | "right";
 interface Props {
   currentUser: IUser | undefined;
   products: Product[];
+  boughtProducts: BoughtProduct[];
   handlePurchasedProduct: ProductCallback;
 }
 
-export const TemporaryDrawerLogged: FC<Props> = ({ currentUser, products, handlePurchasedProduct }) => {
+export const TemporaryDrawerLogged: FC<Props> = ({
+  currentUser,
+  products,
+  handlePurchasedProduct,
+  boughtProducts,
+}) => {
   const classes = useStyles();
   const [state, setState] = React.useState({
     top: false,
@@ -67,7 +83,7 @@ export const TemporaryDrawerLogged: FC<Props> = ({ currentUser, products, handle
     setState({ ...state, [anchor]: open });
   };
 
-  function setPurchasedProduct(p: Product){
+  function setPurchasedProduct(p: Product) {
     handlePurchasedProduct(p);
   }
 
@@ -82,9 +98,31 @@ export const TemporaryDrawerLogged: FC<Props> = ({ currentUser, products, handle
     >
       <List>
         {products.map((p) => (
-          <ListItem button onClick={() => {setPurchasedProduct(p)}}>
-            <ListItemAvatar><Avatar src={p.imageUrl}/></ListItemAvatar>
+          <ListItem
+            button
+            onClick={() => {
+              setPurchasedProduct(p);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar src={p.imageUrl} />
+            </ListItemAvatar>
             <ListItemText>{p.name}</ListItemText>
+          </ListItem>
+        ))}
+        <Divider></Divider>
+        <ListItem>
+          <ListItemText>Purchased Products</ListItemText>
+        </ListItem>
+        {boughtProducts.map((b) => (
+          <ListItem>
+            <ListItemAvatar>
+              <Avatar src={b.product?.imageUrl} />
+            </ListItemAvatar>
+            <ListItemText>
+              {b.product?.name}
+              {b.state === "ready" ? (<CheckIcon/>) : (<CircularProgressWithLabel/>)}
+            </ListItemText>
           </ListItem>
         ))}
       </List>

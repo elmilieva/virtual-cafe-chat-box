@@ -44,7 +44,6 @@ export const Register: FC<Props> = ({ handleRegister }) => {
           password: values.password,
           email: values.email,
           imageUrl: values.imageUrl,
-          roles: [0],
         } as User;
         handleRegister(user);
       }}
