@@ -54,7 +54,6 @@ export default function Login(): ReactElement {
       }}
       onSubmit={(values, actions) => {
         actions.setSubmitting(false);
-        console.log(values.username);
         dispatch(
           submitLogin(
             {

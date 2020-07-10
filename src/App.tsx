@@ -28,13 +28,36 @@ import { TemporaryDrawerLogged } from "./TempDrawerLogged";
 import { Product } from "./model/product.model";
 import productService from "./service/product-service";
 import { ProductForm } from "./Components/ProductForm/ProductForm";
+import { validateYupSchema } from "formik";
+import Alert from "./Components/Alert/Alert";
+
+
 const SOCKET_IO_URL = "http://localhost:9000/";
 const socket = io(SOCKET_IO_URL);
+
 interface indexState {
   loginClicked: boolean;
 }
 
 function App() {
+  const [purchasedProduct, setPurchasedProduct] = useState<Product | undefined>(undefined);
+  const [productReadyMessage, setProductReadyMessage] = useState<string>("");
+  const timeoutRef = React.useRef<any>(null);
+  function productReady() {
+    setProductReadyMessage("Your "+ purchasedProduct?.name+" is ready!");
+  }
+  useEffect(() => {
+    if(timeoutRef.current !== null){
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(()=>{
+      timeoutRef.current = null;
+      if(purchasedProduct !== undefined){
+        productReady();
+        setPurchasedProduct(undefined);
+      }
+    }, 5000);
+  },[purchasedProduct]);
   const currentUser = useSelector((state: RootState) => state.auth.loggedUser);
   const [messages, setMessages] = useState<Message[]>([
     new Message(
@@ -79,6 +102,10 @@ function App() {
     setInitialized(true);
   };
 
+  const handlePurchasedProduct: ProductCallback = (product) => {
+    setPurchasedProduct(product);
+  }
+
   const handleSubmitUser: UserCallback = (user) => {
     if (user._id) {
       //Edit
@@ -88,7 +115,7 @@ function App() {
     } else {
       //Create
       UserService.createNewUser(user).then((created) => {
-        setUsers(users.concat(created));
+        setUsers(users => [...users, created]);
       });
     }
     history.push("/login");
@@ -138,15 +165,12 @@ function App() {
     },
   });
 
-  // change <nav> to a <Navigation> react component
-  // for register have a handler that takes the newly created react model User
-  // and sends it to the UserService, which sends it to the server POST user endpoint
-  //https://codepen.io/marko-zub/pen/NpYwyr
   return (
     <React.Fragment>
       <ThemeProvider theme={darkTheme}>
         {currentUser ? (
           <TemporaryDrawerLogged
+            handlePurchasedProduct={handlePurchasedProduct}
             products={products}
             currentUser={currentUser}
           />
@@ -176,14 +200,14 @@ function App() {
               handleRoomCreate={handleRoomCreate}
             ></RoomForm>
           </ProtectedRoute>
-          <Route exact path="/chat-room">
+          <ProtectedRoute exact path="/chat-room">
             <ChatRoom
               rooms={rooms}
               messages={messages}
               handleSubmitMessage={handleSubmitMessage}
               currentUser={currentUser}
             ></ChatRoom>
-          </Route>
+          </ProtectedRoute>
           <ProtectedRoute exact path="/add-product">
             <ProductForm
               handleProductCreate={handleProductCreate}
@@ -201,6 +225,7 @@ function App() {
           </ProtectedRoute>
         </Switch>
       </ThemeProvider>
+      {(productReadyMessage !== "") && (<Alert key={productReadyMessage} severity="success">{productReadyMessage}</Alert>)}
     </React.Fragment>
   );
 }

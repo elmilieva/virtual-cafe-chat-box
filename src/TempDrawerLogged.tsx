@@ -16,6 +16,7 @@ import { AppBar, Toolbar, IconButton, Typography, ListItemAvatar, Avatar } from 
 import { NavLink } from "react-router-dom";
 import { IUser } from "./model/user.model";
 import { Product } from "./model/product.model";
+import { ProductCallback } from './shared/shared-types';
 
 const useStyles = makeStyles({
   list: {
@@ -40,9 +41,10 @@ type Anchor = "top" | "left" | "bottom" | "right";
 interface Props {
   currentUser: IUser | undefined;
   products: Product[];
+  handlePurchasedProduct: ProductCallback;
 }
 
-export const TemporaryDrawerLogged: FC<Props> = ({ currentUser, products }) => {
+export const TemporaryDrawerLogged: FC<Props> = ({ currentUser, products, handlePurchasedProduct }) => {
   const classes = useStyles();
   const [state, setState] = React.useState({
     top: false,
@@ -50,8 +52,6 @@ export const TemporaryDrawerLogged: FC<Props> = ({ currentUser, products }) => {
     bottom: false,
     right: false,
   });
-
-  console.log(products);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => (
     event: React.KeyboardEvent | React.MouseEvent
@@ -67,6 +67,10 @@ export const TemporaryDrawerLogged: FC<Props> = ({ currentUser, products }) => {
     setState({ ...state, [anchor]: open });
   };
 
+  function setPurchasedProduct(p: Product){
+    handlePurchasedProduct(p);
+  }
+
   const productList = (anchor: Anchor) => (
     <div
       className={clsx(classes.list, {
@@ -78,7 +82,7 @@ export const TemporaryDrawerLogged: FC<Props> = ({ currentUser, products }) => {
     >
       <List>
         {products.map((p) => (
-          <ListItem button>
+          <ListItem button onClick={() => {setPurchasedProduct(p)}}>
             <ListItemAvatar><Avatar src={p.imageUrl}/></ListItemAvatar>
             <ListItemText>{p.name}</ListItemText>
           </ListItem>

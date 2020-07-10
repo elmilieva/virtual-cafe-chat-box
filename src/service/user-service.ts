@@ -48,25 +48,6 @@ class UserService {
         const deleted = await resp.json();
         return deleted;
     }
-
- 
-    // async loadPosts(searchTerms: string[]): Promise<Post[]> {
-    //     console.log(searchTerms);
-    //     const searchText = searchTerms.join(' ');
-    //     const result = await fetch(GOOGLE_BOOKS_API + encodeURIComponent(searchText));
-    //     const postsFound = await result.json() as RootObject;
-    //     // console.log(postsFound);
-    //     return postsFound.items.map(item => new Post(
-    //         item.id,
-    //         item.volumeInfo.title, 
-    //         item.volumeInfo.authors,
-    //         item.volumeInfo.imageLinks?.thumbnail,
-    //         item.volumeInfo.subtitle,
-    //         item.volumeInfo.categories,
-    //         searchTerms,
-    //         item.volumeInfo.description
-    //     ));
-    // }
 }
 
 export default new UserService();
