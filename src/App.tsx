@@ -26,11 +26,12 @@ import { Room } from "./model/room.model";
 import TemporaryDrawer from "./TempDrawer";
 import { TemporaryDrawerLogged } from "./TempDrawerLogged";
 import { Product } from "./model/product.model";
-import productService from "./service/product-service";
+import ProductService from "./service/product-service";
 import { ProductForm } from "./Components/ProductForm/ProductForm";
 import { validateYupSchema } from "formik";
 import Alert from "./Components/Alert/Alert";
 import { BoughtProduct } from "./model/boughtProduct.model";
+import { EditProduct } from "./Components/EditProduct/EditProduct";
 
 const SOCKET_IO_URL = "http://localhost:9000/";
 const socket = io(SOCKET_IO_URL);
@@ -64,7 +65,6 @@ function App() {
           }
           return item;
         });
-        console.log(updatedBoughtProducts);
         setBoughtProducts(updatedBoughtProducts);
         productReady();
         //setPurchasedProducts();
@@ -96,7 +96,7 @@ function App() {
   );
   useEffect(() => {
     UserService.getAllUsers().then((users) => setUsers(users));
-    productService.getAllProducts().then((products) => setProducts(products));
+    ProductService.getAllProducts().then((products) => setProducts(products));
     if (!initialized) {
       connectToRoom();
     }
@@ -126,7 +126,6 @@ function App() {
       ...boughtProducts,
       new BoughtProduct(product, "making"),
     ]);
-    console.log(boughtProducts);
   };
 
   const handleSubmitUser: UserCallback = (user) => {
@@ -144,6 +143,8 @@ function App() {
     history.push("/login");
   };
 
+  
+
   const handleSetUserToEdit: UserCallback = (user) => {
     setUserToEdit(user);
     history.push(`/edit-user/${user._id}`);
@@ -151,10 +152,12 @@ function App() {
   const handleSetProductToEdit: ProductCallback = (product) => {
     setProductToEdit(product);
     history.push(`/edit-product/${product._id}`);
+
   };
   const handleEditProduct: ProductCallback = async (product) => {
-    await productService.updateProduct(product);
-    productService.getAllProducts().then((products) => setProducts(products));
+    console.log(product);
+    await ProductService.updateProduct(product);
+    ProductService.getAllProducts().then((products) => setProducts(products));
     history.push("/admin");
   };
 
@@ -170,15 +173,27 @@ function App() {
     history.push("/admin");
   };
 
+  const handleDeleteProduct: ProductCallback = async (product) => {
+    await ProductService.deleteProduct(product._id);
+    ProductService.getAllProducts().then((products) => setProducts(products));
+    history.push("/admin");
+  };
+
   const handleRoomCreate: RoomCallback = (room) => {
     setRooms((rooms) => [...rooms, room]);
     history.push("/chatroom");
   };
 
-  const handleProductCreate: ProductCallback = (product) => {
-    productService.createNewProduct(product).then((created) => {
+const handleProductCreate: ProductCallback = (product) => {
+if(product._id){
+  ProductService.updateProduct(product).then((edited) => {
+    setProducts(products.map((p) => (p._id === edited.id ? product : p)));
+  })
+} else {
+    ProductService.createNewProduct(product).then((created) => {
       setProducts((products) => [...products, created]);
     });
+  }
     history.push("/admin");
   };
 
@@ -216,6 +231,7 @@ function App() {
               onEdit={handleSetUserToEdit}
               onDelete={handleDeleteUser}
               onEditProduct={handleSetProductToEdit}
+              onDeleteProduct={handleDeleteProduct}
             ></Admin>
           </ProtectedRoute>
           <ProtectedRoute exact path="/add-room">
@@ -246,6 +262,9 @@ function App() {
           </Route>
           <ProtectedRoute exact path="/edit-user/:userId">
             <EditUser user={userToEdit} onEditUser={handleEditUser} />
+          </ProtectedRoute>
+          <ProtectedRoute exact path="/edit-product/:productId">
+            <EditProduct product={productToEdit} onEditProduct={handleEditProduct} />
           </ProtectedRoute>
         </Switch>
       </ThemeProvider>

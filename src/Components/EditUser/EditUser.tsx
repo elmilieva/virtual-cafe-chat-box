@@ -3,13 +3,31 @@ import "./EditUser.css";
 import { User } from "../../model/user.model";
 import { UserCallback } from "../../shared/shared-types";
 import { Formik } from "formik";
+import { makeStyles, TextField, Typography, FormGroup, Button } from "@material-ui/core";
+import * as Yup from "yup";
 
 interface Props {
   user: User | undefined;
   onEditUser: UserCallback;
 }
 
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(1),
+    padding: "1rem",
+  },
+  space: {
+    margin: "1rem",
+  },
+  center: {
+    textAlign: "center",
+  },
+}));
+
+
 export const EditUser: FC<Props> = ({ user, onEditUser }) => {
+  const classes = useStyles();
   return (
     <Formik
       initialValues={{
@@ -33,116 +51,86 @@ export const EditUser: FC<Props> = ({ user, onEditUser }) => {
         } as User;
        onEditUser(user);
       }}
+      validateOnChange
+      validationSchema={Yup.object().shape({
+        firstName: Yup.string().required("First Name is required!").min(2,'Too Short!').max(40, 'Too Long!'),
+        lastName: Yup.string().required("Last Name is required!").min(2, 'Too Short!').max(40, 'Too Long!'),
+        email: Yup.string().required("Email is required!").email(),
+        
+      })}
     >
       {(props) => (
-        <div className="Register-form">
-          <form className="form" onSubmit={props.handleSubmit}>
-            <div className="control">
-              <h1>Edit User</h1>
-            </div>
-            <div className="control block-cube block-input">
-              <input
-                className="fancy-input"
-                placeholder="First Name"
+        <div>
+          <form className={classes.root} onSubmit={props.handleSubmit}>
+            <Typography className={classes.center} variant="h4">
+              Edit User
+            </Typography>
+            <FormGroup>
+              <TextField
+                error={(props.errors.firstName && props.touched.firstName) ? true : false}
+                helperText={props.errors.firstName && props.touched.firstName ? props.errors.firstName : ""}
                 onChange={props.handleChange}
                 onBlur={props.handleBlur}
-                type="text"
-                style={{}}
-                autoComplete="off"
                 name="firstName"
-                value={props.values.firstName}
+                variant="outlined"
+                className={classes.space}
+                label="First Name"
+                autoComplete="off"
+                defaultValue={user?.firstName}
               />
-              <div className="bg-top">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg-right">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg">
-                <div className="bg-inner"></div>
-              </div>
-            </div>
-            <div className="control block-cube block-input">
-              <input
+
+              <TextField
+              error={(props.errors.lastName && props.touched.lastName) ? true : false}
+              helperText={props.errors.lastName && props.touched.lastName ? props.errors.lastName : ""}
+                variant="outlined"
                 onChange={props.handleChange}
                 onBlur={props.handleBlur}
-                className="fancy-input"
+                className={classes.space}
                 name="lastName"
-                placeholder="Last Name"
+                label="Last Name"
                 type="text"
                 style={{}}
                 autoComplete="off"
-                value={props.values.lastName}
+                defaultValue={user?.lastName}
               />
-              <div className="bg-top">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg-right">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg">
-                <div className="bg-inner"></div>
-              </div>
-            </div>
 
-            <div className="control block-cube block-input">
-              <input
+              <TextField
+               error={(props.errors.email && props.touched.email) ? true : false}
+               helperText={props.errors.email && props.touched.email ? props.errors.email : ""}
+                variant="outlined"
                 onChange={props.handleChange}
                 onBlur={props.handleBlur}
-                className="fancy-input"
+                className={classes.space}
                 name="email"
-                placeholder="E-mail"
+                label="E-mail"
                 type="email"
                 style={{}}
                 autoComplete="off"
-                value={props.values.email}
+                defaultValue={user?.email}
               />
-              <div className="bg-top">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg-right">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg">
-                <div className="bg-inner"></div>
-              </div>
-            </div>
 
-            <div className="control block-cube block-input">
-              <input
+              <TextField
+                variant="outlined"
                 onChange={props.handleChange}
                 onBlur={props.handleBlur}
-                className="fancy-input"
+                className={classes.space}
                 name="imageUrl"
-                placeholder="Profile Picture"
+                label="Profile Picture"
                 type="text"
                 style={{}}
                 autoComplete="off"
                 value={props.values.imageUrl}
               />
-              <div className="bg-top">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg-right">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg">
-                <div className="bg-inner"></div>
-              </div>
-            </div>
-
-            <button className="btn block-cube block-cube-hover" type="submit">
-              <div className="bg-top">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg-right">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="bg">
-                <div className="bg-inner"></div>
-              </div>
-              <div className="text">Submit</div>
-            </button>
+              
+              <Button
+                className={classes.space}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Edit
+              </Button>
+            </FormGroup>
           </form>
         </div>
       )}

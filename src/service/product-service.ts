@@ -2,13 +2,13 @@ import { ProductRepository } from "../dao/repository";
 import { IdType } from "../shared/shared-types";
 import { Product } from "../model/product.model";
 
-class UserService {
+class ProductService {
   private repo = new ProductRepository();
 
   async getAllProducts() {
     const resp = await fetch("http://localhost:9000/api/products");
-    const users = await resp.json();
-    return users;
+    const product = await resp.json();
+    return product;
   }
 
   async getProductById(productId: IdType) {
@@ -55,4 +55,4 @@ class UserService {
   }
 }
 
-export default new UserService();
+export default new ProductService();

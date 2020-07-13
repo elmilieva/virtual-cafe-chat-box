@@ -25,6 +25,7 @@ interface Props {
   onEdit: UserCallback;
   onDelete: UserCallback;
   onEditProduct: ProductCallback;
+  onDeleteProduct: ProductCallback;
 }
 
 const useStyles = makeStyles({
@@ -40,7 +41,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const Admin: FC<Props> = ({ userList, onEdit, onDelete, products, onEditProduct }) => {
+export const Admin: FC<Props> = ({ userList, onEdit, onDelete, products, onEditProduct, onDeleteProduct }) => {
   const classes = useStyles();
   return (
     <React.Fragment>
@@ -101,8 +102,11 @@ export const Admin: FC<Props> = ({ userList, onEdit, onDelete, products, onEditP
                     <Button variant="contained" color="primary" onClick={() => onEditProduct(p)}>Edit</Button>
                   </TableCell>
                   <TableCell align="right">
-                    {/* <Button onClick={() => onDelete(p)}>Delete</Button> */}
+                  <Button variant="contained" color="primary" onClick={() => onDeleteProduct(p)}>Delete</Button>
                   </TableCell>
+                  {/* <TableCell align="right">
+                  <Button variant="contained" color="primary" onClick={() => onDeleteProduct(p)}>Delete</Button>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>
