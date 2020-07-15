@@ -23,41 +23,35 @@ import { useSelector } from "react-redux";
 import { RootState } from "./app/rootReducer";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core";
 import { Room } from "./model/room.model";
-import TemporaryDrawer from "./TempDrawer";
-import { TemporaryDrawerLogged } from "./TempDrawerLogged";
+import TemporaryDrawer from "./Components/TempDrawer/TempDrawer";
+import { TemporaryDrawerLogged } from "./Components/TempDrawerLogged/TempDrawerLogged";
 import { Product } from "./model/product.model";
 import ProductService from "./service/product-service";
 import { ProductForm } from "./Components/ProductForm/ProductForm";
-import { validateYupSchema } from "formik";
 import Alert from "./Components/Alert/Alert";
 import { BoughtProduct } from "./model/boughtProduct.model";
 import { EditProduct } from "./Components/EditProduct/EditProduct";
+import roomService from "./service/room-service";
+import { ChatRooms } from "./Components/ChatRooms/ChatRooms";
 
+// connecting the socket.io client to the server
 const SOCKET_IO_URL = "http://localhost:9000/";
 const socket = io(SOCKET_IO_URL);
-
-interface indexState {
-  loginClicked: boolean;
-}
 
 function App() {
   const [boughtProducts, setBoughtProducts] = useState<BoughtProduct[]>([]);
   const [purchasedProducts, setPurchasedProducts] = useState<Product[]>([]);
   const [productReadyMessage, setProductReadyMessage] = useState<string>("");
   const timeoutRef = React.useRef<any>(null);
-  function productReady() {
-    setProductReadyMessage(
-      "Your " +
-        purchasedProducts[purchasedProducts.length - 1]?.name +
-        " is ready!"
-    );
-  }
   useEffect(() => {
     if (timeoutRef.current !== null) {
       clearTimeout(timeoutRef.current);
     }
     timeoutRef.current = setTimeout(() => {
       timeoutRef.current = null;
+      // for the last bought product (or 1st in the list) we set the timeout to 5 seconds
+      // and then update the last bought (or 1st) product's state from making to ready
+      // then set update the hooks
       if (purchasedProducts[purchasedProducts.length - 1] !== undefined) {
         const updatedBoughtProducts = boughtProducts.map((item, index) => {
           if (index === boughtProducts.length - 1) {
@@ -66,26 +60,17 @@ function App() {
           return item;
         });
         setBoughtProducts(updatedBoughtProducts);
-        productReady();
-        //setPurchasedProducts();
+        setProductReadyMessage(
+          "Your " +
+            purchasedProducts[purchasedProducts.length - 1]?.name +
+            " is ready!"
+        );
       }
     }, 5000);
   }, [purchasedProducts, boughtProducts]);
   const currentUser = useSelector((state: RootState) => state.auth.loggedUser);
-  const [messages, setMessages] = useState<Message[]>([
-    new Message(
-      new User(
-        "1",
-        "Chat",
-        "Bot",
-        "32",
-        "32",
-        "32",
-        "https://core3.imgix.net/59afd70fd1abalogo1250x250.png?auto=format,compress&w=480&fit=max&"
-      ),
-      "Welcome to chat!"
-    ),
-  ]);
+  const [activeRoom, setActiveRoom] = useState<Room | undefined>(undefined);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [initialized, setInitialized] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -103,16 +88,26 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    roomService.getAllRooms().then((rooms) => setRooms(rooms));
+  }, [rooms]);
+
   const history = useHistory();
 
   const handleSubmitMessage: MessageCallback = (message) => {
-    //const data = `{"user": "${message.user?.firstName+" "+message.user?.lastName}", "message": "${message.message}"}`;
     socket.emit("chat message", message);
+  };
+
+  const joinRoom = (room: Room) => {
+    socket.emit("join room", room);
   };
 
   const connectToRoom = () => {
     socket.on("chat message", (data: Message) => {
       setMessages((messages) => [...messages, data]);
+    });
+    socket.on("connectToRoom", (data: string) => {
+      console.log(data);
     });
     setInitialized(true);
   };
@@ -131,9 +126,7 @@ function App() {
   const handleSubmitUser: UserCallback = (user) => {
     if (user._id) {
       //Edit
-      UserService.updateUser(user).then((edited) => {
-        //setUsers(users.map((p) => (p.id === edited.id ? user : p)));
-      });
+      UserService.updateUser(user).then((edited) => {});
     } else {
       //Create
       UserService.createNewUser(user).then((created) => {
@@ -143,8 +136,6 @@ function App() {
     history.push("/login");
   };
 
-  
-
   const handleSetUserToEdit: UserCallback = (user) => {
     setUserToEdit(user);
     history.push(`/edit-user/${user._id}`);
@@ -152,10 +143,8 @@ function App() {
   const handleSetProductToEdit: ProductCallback = (product) => {
     setProductToEdit(product);
     history.push(`/edit-product/${product._id}`);
-
   };
   const handleEditProduct: ProductCallback = async (product) => {
-    console.log(product);
     await ProductService.updateProduct(product);
     ProductService.getAllProducts().then((products) => setProducts(products));
     history.push("/admin");
@@ -179,21 +168,33 @@ function App() {
     history.push("/admin");
   };
 
-  const handleRoomCreate: RoomCallback = (room) => {
-    setRooms((rooms) => [...rooms, room]);
-    history.push("/chatroom");
+  const handleRoomCreate: RoomCallback = async (room) => {
+    roomService.createNewRoom(room).then((created) => {
+      setRooms((rooms) => [...rooms, created]);
+      joinRoom(created);
+      setActiveRoom(room);
+      setMessages([]);
+      history.push(`/chat-room/${created._id}`);
+    });
   };
 
-const handleProductCreate: ProductCallback = (product) => {
-if(product._id){
-  ProductService.updateProduct(product).then((edited) => {
-    setProducts(products.map((p) => (p._id === edited.id ? product : p)));
-  })
-} else {
-    ProductService.createNewProduct(product).then((created) => {
-      setProducts((products) => [...products, created]);
-    });
-  }
+  const handleSetActiveRoom: RoomCallback = async (room) => {
+    joinRoom(room);
+    setActiveRoom(room);
+    setMessages([]);
+    history.push(`/chat-room/${room._id}`);
+  };
+
+  const handleProductCreate: ProductCallback = (product) => {
+    if (product._id) {
+      ProductService.updateProduct(product).then((edited) => {
+        setProducts(products.map((p) => (p._id === edited.id ? product : p)));
+      });
+    } else {
+      ProductService.createNewProduct(product).then((created) => {
+        setProducts((products) => [...products, created]);
+      });
+    }
     history.push("/admin");
   };
 
@@ -208,6 +209,7 @@ if(product._id){
       <ThemeProvider theme={darkTheme}>
         {currentUser ? (
           <TemporaryDrawerLogged
+            activeRoom={activeRoom}
             boughtProducts={boughtProducts}
             handlePurchasedProduct={handlePurchasedProduct}
             products={products}
@@ -227,6 +229,7 @@ if(product._id){
           <ProtectedRoute exact path="/admin">
             <Admin
               products={products}
+              roomList={rooms}
               userList={users}
               onEdit={handleSetUserToEdit}
               onDelete={handleDeleteUser}
@@ -240,9 +243,16 @@ if(product._id){
               handleRoomCreate={handleRoomCreate}
             ></RoomForm>
           </ProtectedRoute>
-          <ProtectedRoute exact path="/chat-room">
-            <ChatRoom
+          <ProtectedRoute exact path="/chat-rooms">
+            <ChatRooms
+              setActiveRoom={handleSetActiveRoom}
+              currentUser={currentUser}
               rooms={rooms}
+            ></ChatRooms>
+          </ProtectedRoute>
+          <ProtectedRoute exact path="/chat-room/:roomId">
+            <ChatRoom
+              activeRoom={activeRoom}
               messages={messages}
               handleSubmitMessage={handleSubmitMessage}
               currentUser={currentUser}
@@ -264,7 +274,10 @@ if(product._id){
             <EditUser user={userToEdit} onEditUser={handleEditUser} />
           </ProtectedRoute>
           <ProtectedRoute exact path="/edit-product/:productId">
-            <EditProduct product={productToEdit} onEditProduct={handleEditProduct} />
+            <EditProduct
+              product={productToEdit}
+              onEditProduct={handleEditProduct}
+            />
           </ProtectedRoute>
         </Switch>
       </ThemeProvider>

@@ -19,13 +19,15 @@ import {
 import { Formik } from "formik";
 import { Room } from "../../model/room.model";
 
+// properties from parent
 interface Props {
   currentUser: IUser | undefined;
   handleSubmitMessage: MessageCallback;
   messages: Message[];
-  rooms: Room[];
+  activeRoom: Room | undefined;
 }
 
+// styles and classes for materialUI
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
@@ -48,22 +50,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// ChatRoom component with properties from parent
 export const ChatRoom: FC<Props> = ({
   handleSubmitMessage,
   currentUser,
   messages,
-  rooms
+  activeRoom
 }) => {
   const classes = useStyles();
   return (
     <Grid container>
       <div
-        style={{ height: "90%", width: "100%" }}
         className="messages-container"
       >
         <List>
-          {messages.map((m) => (
-            <ListItem>
+          {messages.map((m, index) => (
+            <ListItem key={index}>
               <ListItemAvatar>
                 <Avatar src={m.user?.imageUrl} />
               </ListItemAvatar>
@@ -85,7 +87,6 @@ export const ChatRoom: FC<Props> = ({
               </ListItemText>
             </ListItem>
           ))}
-          {rooms.map((r)=><span>{r.roomName}</span>)}
         </List>
       </div>
       <Formik
@@ -98,6 +99,7 @@ export const ChatRoom: FC<Props> = ({
           const message = {
             user: currentUser,
             message: values.message,
+            roomName: activeRoom?.roomName
           } as Message;
           handleSubmitMessage(message);
           values.message = "";

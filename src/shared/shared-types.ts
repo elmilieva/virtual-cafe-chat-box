@@ -6,25 +6,25 @@ import { Product } from "../model/product.model";
 export type IdType = string;
 
 export interface Indentifiable {
-    _id: IdType
+  _id: IdType;
 }
 
 export interface StringCallback {
-    (searchText: string): void;
+  (searchText: string): void;
 }
 
 export interface UserCallback {
-    (user: User): void;
+  (user: User): void;
 }
 
-export interface MessageCallback{
-    (message: Message): void;
+export interface MessageCallback {
+  (message: Message): void;
 }
 
-export interface RoomCallback{
-    (room: Room): void;
+export interface RoomCallback {
+  (room: Room): void;
 }
 
-export interface ProductCallback{
-    (product: Product): void;
+export interface ProductCallback {
+  (product: Product): void;
 }

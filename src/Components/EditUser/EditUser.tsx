@@ -1,17 +1,17 @@
 import React, { FC } from "react";
-import "./EditUser.css";
 import { User } from "../../model/user.model";
 import { UserCallback } from "../../shared/shared-types";
 import { Formik } from "formik";
 import { makeStyles, TextField, Typography, FormGroup, Button } from "@material-ui/core";
 import * as Yup from "yup";
 
+// properties from parent
 interface Props {
   user: User | undefined;
   onEditUser: UserCallback;
 }
 
-
+// styles and classes for materialUI
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
+// EditUser component with properties from parent
 export const EditUser: FC<Props> = ({ user, onEditUser }) => {
   const classes = useStyles();
   return (

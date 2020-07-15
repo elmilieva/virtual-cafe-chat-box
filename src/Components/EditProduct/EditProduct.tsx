@@ -5,12 +5,13 @@ import { Formik } from "formik";
 import { makeStyles, TextField, Typography, FormGroup, Button } from "@material-ui/core";
 import * as Yup from "yup";
 
+// properties from parent
 interface Props {
   product: Product | undefined;
   onEditProduct: ProductCallback;
 }
 
-
+// styles and classes for materialUI
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
+// EditProduct component with properties from parent
 export const EditProduct: FC<Props> = ({ product, onEditProduct }) => {
   const classes = useStyles();
   return (

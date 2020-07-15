@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import "./Admin.css";
 import { User } from "../../model/user.model";
 import { UserCallback } from "../../shared/shared-types";
 import { NavLink } from "react-router-dom";
@@ -15,10 +14,15 @@ import {
   Button,
   Typography,
   Avatar,
+  List,
+  ListItem,
 } from "@material-ui/core";
 import { Product } from "../../model/product.model";
-import { ProductCallback } from './../../shared/shared-types';
+import { ProductCallback } from "./../../shared/shared-types";
+import { Room } from "../../model/room.model";
+import ListItemText from "@material-ui/core/ListItemText";
 
+// properties from parent
 interface Props {
   userList: User[];
   products: Product[];
@@ -26,8 +30,10 @@ interface Props {
   onDelete: UserCallback;
   onEditProduct: ProductCallback;
   onDeleteProduct: ProductCallback;
+  roomList: Room[];
 }
 
+// styles and classes for materialUI
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -41,7 +47,17 @@ const useStyles = makeStyles({
   },
 });
 
-export const Admin: FC<Props> = ({ userList, onEdit, onDelete, products, onEditProduct, onDeleteProduct }) => {
+// Admin component with parent props
+export const Admin: FC<Props> = ({
+  userList,
+  onEdit,
+  onDelete,
+  products,
+  onEditProduct,
+  onDeleteProduct,
+  roomList,
+}) => {
+  // classes for materialUI
   const classes = useStyles();
   return (
     <React.Fragment>
@@ -67,12 +83,26 @@ export const Admin: FC<Props> = ({ userList, onEdit, onDelete, products, onEditP
                   <TableCell align="right">{u.lastName}</TableCell>
                   <TableCell align="right">{u.username}</TableCell>
                   <TableCell align="right">{u.email}</TableCell>
-                  <TableCell align="right"><Avatar style={{float: "right"}} src={u.imageUrl}/></TableCell>
                   <TableCell align="right">
-                    <Button variant="contained" color="primary" onClick={() => onEdit(u)}>Edit</Button>
+                    <Avatar style={{ float: "right" }} src={u.imageUrl} />
                   </TableCell>
                   <TableCell align="right">
-                    <Button variant="contained" color="primary" onClick={() => onDelete(u)}>Delete</Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => onEdit(u)}
+                    >
+                      Edit
+                    </Button>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => onDelete(u)}
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -97,16 +127,27 @@ export const Admin: FC<Props> = ({ userList, onEdit, onDelete, products, onEditP
               {products.map((p) => (
                 <TableRow key={p._id}>
                   <TableCell>{p.name}</TableCell>
-                  <TableCell align="right"><Avatar style={{float: "right"}} src={p.imageUrl}/></TableCell>
                   <TableCell align="right">
-                    <Button variant="contained" color="primary" onClick={() => onEditProduct(p)}>Edit</Button>
+                    <Avatar style={{ float: "right" }} src={p.imageUrl} />
                   </TableCell>
                   <TableCell align="right">
-                  <Button variant="contained" color="primary" onClick={() => onDeleteProduct(p)}>Delete</Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => onEditProduct(p)}
+                    >
+                      Edit
+                    </Button>
                   </TableCell>
-                  {/* <TableCell align="right">
-                  <Button variant="contained" color="primary" onClick={() => onDeleteProduct(p)}>Delete</Button>
-                  </TableCell> */}
+                  <TableCell align="right">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => onDeleteProduct(p)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -117,6 +158,49 @@ export const Admin: FC<Props> = ({ userList, onEdit, onDelete, products, onEditP
             Add Product
           </Button>
         </NavLink>
+        <br></br>
+        <br></br>
+        <br></br>
+        <Typography variant="h4">Rooms</Typography>
+        <TableContainer className={classes.tableContainer} component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Room Name</TableCell>
+                <TableCell>Participants</TableCell>
+                <TableCell align="right">Delete</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {roomList.map((r) => (
+                <TableRow key={r._id}>
+                  <TableCell>{r.roomName}</TableCell>
+                  <TableCell>
+                    <List style={{ margin: "0", padding: "0" }}>
+                      {r.participants.map((p) => (
+                        <ListItem style={{ margin: "0", padding: "0" }}>
+                          <ListItemText style={{ margin: "0", padding: "0" }}>
+                            {p.firstName} {p.lastName} ({p.username})
+                          </ListItemText>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      variant="contained"
+                      disabled
+                      color="primary"
+                      // onClick={() => onDeleteProduct(r)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
     </React.Fragment>
   );

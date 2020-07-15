@@ -8,11 +8,13 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import HomeIcon from "@material-ui/icons/Home";
-import LocalCafeIcon from "@material-ui/icons/LocalCafe";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import ChatIcon from "@material-ui/icons/Chat";
 import MenuIcon from "@material-ui/icons/Menu";
 import CheckIcon from "@material-ui/icons/Check";
+import AddIcon from "@material-ui/icons/Add";
+import { useLocation, useHistory } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -22,12 +24,14 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { NavLink } from "react-router-dom";
-import { IUser } from "./model/user.model";
-import { Product } from "./model/product.model";
-import { ProductCallback } from "./shared/shared-types";
-import { BoughtProduct } from "./model/boughtProduct.model";
-import CircularProgressWithLabel from "./Components/CircularProgress/CircularProgress";
+import { IUser } from "../../model/user.model";
+import { Product } from "../../model/product.model";
+import { ProductCallback } from "../../shared/shared-types";
+import { BoughtProduct } from "../../model/boughtProduct.model";
+import CircularProgressWithLabel from "../CircularProgress/CircularProgress";
+import { Room } from "../../model/room.model";
 
+// styles and classes for materialUI
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -48,19 +52,24 @@ const useStyles = makeStyles({
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
+// properties from parent
 interface Props {
   currentUser: IUser | undefined;
   products: Product[];
   boughtProducts: BoughtProduct[];
   handlePurchasedProduct: ProductCallback;
+  activeRoom: Room | undefined;
 }
 
+// TemporaryDrawerLogged component with properties from parent
 export const TemporaryDrawerLogged: FC<Props> = ({
   currentUser,
   products,
   handlePurchasedProduct,
   boughtProducts,
+  activeRoom,
 }) => {
+  const history = useHistory();
   const classes = useStyles();
   const [state, setState] = React.useState({
     top: false,
@@ -68,7 +77,7 @@ export const TemporaryDrawerLogged: FC<Props> = ({
     bottom: false,
     right: false,
   });
-
+  let location = useLocation();
   const toggleDrawer = (anchor: Anchor, open: boolean) => (
     event: React.KeyboardEvent | React.MouseEvent
   ) => {
@@ -100,6 +109,7 @@ export const TemporaryDrawerLogged: FC<Props> = ({
         {products.map((p) => (
           <ListItem
             button
+            key={p._id}
             onClick={() => {
               setPurchasedProduct(p);
             }}
@@ -121,7 +131,11 @@ export const TemporaryDrawerLogged: FC<Props> = ({
             </ListItemAvatar>
             <ListItemText>
               {b.product?.name}
-              {b.state === "ready" ? (<CheckIcon/>) : (<CircularProgressWithLabel/>)}
+              {b.state === "ready" ? (
+                <CheckIcon />
+              ) : (
+                <CircularProgressWithLabel />
+              )}
             </ListItemText>
           </ListItem>
         ))}
@@ -148,12 +162,20 @@ export const TemporaryDrawerLogged: FC<Props> = ({
           </ListItem>
         </NavLink>
         <Divider></Divider>
-        <NavLink className={classes.anchor} to="/chat-room">
-          <ListItem button key={"chat-room"}>
+        <NavLink className={classes.anchor} to="/add-room">
+          <ListItem button key={"add-room"}>
+            <ListItemIcon>
+              <AddIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Create Room"} />
+          </ListItem>
+        </NavLink>
+        <NavLink className={classes.anchor} to="/chat-rooms">
+          <ListItem button key={"chat-rooms"}>
             <ListItemIcon>
               <ChatIcon />
             </ListItemIcon>
-            <ListItemText primary={"Chat Room"} />
+            <ListItemText primary={"Chat Rooms"} />
           </ListItem>
         </NavLink>
         {currentUser?.roles.find((x) => x === 1) ? (
@@ -168,6 +190,23 @@ export const TemporaryDrawerLogged: FC<Props> = ({
         ) : (
           ""
         )}
+        <Divider></Divider>
+        <NavLink
+          onClick={() => {
+            localStorage.removeItem("loggedUser");
+            history.push("/");
+            window.location.reload(false);
+          }}
+          className={classes.anchor}
+          to="/"
+        >
+          <ListItem>
+            <ListItemIcon>
+              <ExitToAppIcon />
+            </ListItemIcon>
+            <ListItemText>Logout</ListItemText>
+          </ListItem>
+        </NavLink>
       </List>
     </div>
   );
@@ -185,7 +224,9 @@ export const TemporaryDrawerLogged: FC<Props> = ({
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap>
-            Virtual Cafe
+            {activeRoom && location.pathname.includes("/chat-room")
+              ? activeRoom.roomName
+              : "Virtual Cafe"}
           </Typography>
           <IconButton
             className={classes.right}
@@ -193,7 +234,9 @@ export const TemporaryDrawerLogged: FC<Props> = ({
             aria-label="open drawer"
             onClick={toggleDrawer("right", true)}
           >
-            <LocalCafeIcon />
+            <Avatar style={{ background: "none" }}>
+              <img alt="buy product" src="https://i.imgur.com/3LSKpAm.png" />
+            </Avatar>
           </IconButton>
         </Toolbar>
       </AppBar>

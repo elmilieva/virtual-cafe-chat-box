@@ -1,5 +1,4 @@
-import React, { ReactElement, useRef } from "react";
-import "./Login.css";
+import React, { ReactElement } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { submitLogin } from "../../features/auth/authSlice";
@@ -9,13 +8,18 @@ import {
   Typography,
   makeStyles,
   FormGroup,
+  useMediaQuery,
 } from "@material-ui/core";
 import { Formik } from "formik";
 
+// styles and classes for materialUI
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(1),
-    padding: "1rem",
+    width: "50%",
+    margin: "0 auto",
+  },
+  mobile:{
+    width: "100%",
   },
   space: {
     margin: "1rem",
@@ -25,27 +29,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// Login component
 export default function Login(): ReactElement {
+  const matches = useMediaQuery('(min-width:600px)');
   const dispatch = useDispatch();
   const history = useHistory();
-
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-
   const classes = useStyles();
-
-  function login(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    dispatch(
-      submitLogin(
-        {
-          username: usernameRef.current?.value || "",
-          password: passwordRef.current?.value || "",
-        },
-        history
-      )
-    );
-  }
   return (
     <Formik
       initialValues={{
@@ -66,7 +55,7 @@ export default function Login(): ReactElement {
       }}
     >
       {(props) => (
-        <div>
+        <div className={matches ? classes.root : classes.mobile}>
           <form
             autoComplete="off"
             onSubmit={props.handleSubmit}

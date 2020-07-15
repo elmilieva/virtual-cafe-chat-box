@@ -1,8 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import {
-  makeStyles,
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -11,11 +9,12 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import HomeIcon from "@material-ui/icons/Home";
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MenuIcon from "@material-ui/icons/Menu";
 import { AppBar, Toolbar, IconButton, Typography } from "@material-ui/core";
 import { NavLink } from "react-router-dom";
 
+// styles and classes for materialUI
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -23,14 +22,15 @@ const useStyles = makeStyles({
   fullList: {
     width: "auto",
   },
-  anchor:{
+  anchor: {
     color: "white",
-    textDecoration: "none"
-  }
+    textDecoration: "none",
+  },
 });
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
+// TemporaryDrawer component
 export default function TemporaryDrawer() {
   const classes = useStyles();
   const [state, setState] = React.useState({
@@ -72,7 +72,7 @@ export default function TemporaryDrawer() {
             <ListItemText primary={"Home"} />
           </ListItem>
         </NavLink>
-        <Divider/>
+        <Divider />
         <NavLink className={classes.anchor} to="/login">
           <ListItem button key={"Login"}>
             <ListItemIcon>
